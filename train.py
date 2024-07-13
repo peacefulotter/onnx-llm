@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.utils.data import Dataset
 
 from mingpt.model import GPT
 from mingpt.trainer import Trainer
@@ -32,19 +33,28 @@ def train_model(trainer: Trainer, model: nn.Module):
     torch.save(model.state_dict(), "model.pt")
 
 
+def get_model() -> nn.Module:
+    config = GPT.get_default_config()
+    config.model_type = "gpt2"
+    config.vocab_size = 3
+    config.block_size = 12
+    model = GPT(config)
+    return model
+
+
+def get_trainer(model: nn.Module, dataset: Dataset):
+    config = Trainer.get_default_config()
+    config.learning_rate = 5e-4
+    config.max_iters = 1000
+    config.batch_size = 32
+    trainer = Trainer(config, model, dataset)
+    return trainer
+
+
 if __name__ == "__main__":
-    model_config = GPT.get_default_config()
-    model_config.model_type = "gpt2"
-    model_config.vocab_size = 50257
-    model_config.block_size = 1024
-    model = GPT(model_config)
 
-    train_dataset = SortDataset("train")
-
-    train_config = Trainer.get_default_config()
-    train_config.learning_rate = 5e-4  # many possible options, see the file
-    train_config.max_iters = 1000
-    train_config.batch_size = 32
-    trainer = Trainer(train_config, model, train_dataset)
+    model = get_model()
+    dataset = SortDataset("train")
+    trainer = get_trainer(model, dataset)
 
     train_model(trainer, model)
