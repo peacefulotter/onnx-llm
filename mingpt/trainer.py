@@ -7,6 +7,7 @@ import time
 from collections import defaultdict
 
 import torch
+from torch.nn import functional as F 
 from torch.utils.data.dataloader import DataLoader
 from mingpt.utils import CfgNode as CN
 
@@ -58,6 +59,12 @@ class Trainer:
         for callback in self.callbacks.get(onevent, []):
             callback(self)
 
+    def loss_function(self, logits, targets):
+
+        # if we are given some desired targets also calculate the loss
+        return F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1)
+
+
     def run(self):
         model, config = self.model, self.config
 
@@ -90,7 +97,8 @@ class Trainer:
             x, y = batch
 
             # forward the model
-            logits, self.loss = model(x, y)
+            logits = model(x)
+            self.loss = self.loss_function(logits,y)
 
             # backprop and update the parameters
             model.zero_grad(set_to_none=True)

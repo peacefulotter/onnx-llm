@@ -1,0 +1,66 @@
+number of parameters: 124.44M
+def forward(self,
+    idx: Tensor,
+    targets: Optional[Tensor]=None) -> Tuple[Tensor, Optional[Tensor]]:
+  _0 = "Cannot forward sequence of length {}, block size is only {}"
+  _1 = __torch__.torch.nn.functional.cross_entropy
+  device = ops.prim.device(idx)
+  _2, t, = torch.size(idx)
+  block_size = self.block_size
+  if torch.le(t, block_size):
+    pass
+  else:
+    block_size0 = self.block_size
+    _3 = torch.add("AssertionError: ", torch.format(_0, t, block_size0))
+    ops.prim.RaiseException(_3)
+  _4 = torch.arange(0, t, dtype=4, layout=None, device=device)
+  pos = torch.unsqueeze(_4, 0)
+  transformer = self.transformer
+  wte = transformer.wte
+  tok_emb = (wte).forward(idx, )
+  transformer0 = self.transformer
+  wpe = transformer0.wpe
+  pos_emb = (wpe).forward(pos, )
+  transformer1 = self.transformer
+  drop = transformer1.drop
+  x = (drop).forward(torch.add(tok_emb, pos_emb), )
+  transformer2 = self.transformer
+  h = transformer2.h
+  _00 = getattr(h, "0")
+  _10 = getattr(h, "1")
+  _20 = getattr(h, "2")
+  _30 = getattr(h, "3")
+  _40 = getattr(h, "4")
+  _5 = getattr(h, "5")
+  _6 = getattr(h, "6")
+  _7 = getattr(h, "7")
+  _8 = getattr(h, "8")
+  _9 = getattr(h, "9")
+  _100 = getattr(h, "10")
+  _11 = getattr(h, "11")
+  x0 = (_00).forward(x, )
+  x1 = (_10).forward(x0, )
+  x2 = (_20).forward(x1, )
+  x3 = (_30).forward(x2, )
+  x4 = (_40).forward(x3, )
+  x5 = (_5).forward(x4, )
+  x6 = (_6).forward(x5, )
+  x7 = (_7).forward(x6, )
+  x8 = (_8).forward(x7, )
+  x9 = (_9).forward(x8, )
+  x10 = (_100).forward(x9, )
+  x11 = (_11).forward(x10, )
+  transformer3 = self.transformer
+  ln_f = transformer3.ln_f
+  x12 = (ln_f).forward(x11, )
+  lm_head = self.lm_head
+  logits = (lm_head).forward(x12, )
+  if torch.__isnot__(targets, None):
+    targets0 = unchecked_cast(Tensor, targets)
+    _12 = torch.view(logits, [-1, torch.size(logits, -1)])
+    loss0 = _1(_12, torch.view(targets0, [-1]), None, None, -1, None, "mean", 0., )
+    loss : Optional[Tensor] = loss0
+  else:
+    loss = None
+  return (logits, loss)
+

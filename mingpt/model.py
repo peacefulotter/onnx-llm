@@ -9,6 +9,7 @@ https://github.com/huggingface/transformers/blob/main/src/transformers/models/gp
 """
 
 import math
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -69,27 +70,33 @@ class CausalSelfAttention(nn.Module):
         # output projection
         y = self.resid_dropout(self.c_proj(y))
         return y
+#Because torchscript cannot handle callables had to make mlp it's own module 
+class MLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.c_fc    = nn.Linear(config.n_embd, 4 * config.n_embd)
+        self.c_proj  = nn.Linear(4 * config.n_embd, config.n_embd)
+        self.act     = NewGELU()
+        self.dropout = nn.Dropout(config.resid_pdrop)
+    def forward(self,x):
+        return self.dropout(self.c_proj(self.act(self.c_fc(x))))
+
+
 
 class Block(nn.Module):
     """ an unassuming Transformer block """
+
 
     def __init__(self, config):
         super().__init__()
         self.ln_1 = nn.LayerNorm(config.n_embd)
         self.attn = CausalSelfAttention(config)
         self.ln_2 = nn.LayerNorm(config.n_embd)
-        self.mlp = nn.ModuleDict(dict(
-            c_fc    = nn.Linear(config.n_embd, 4 * config.n_embd),
-            c_proj  = nn.Linear(4 * config.n_embd, config.n_embd),
-            act     = NewGELU(),
-            dropout = nn.Dropout(config.resid_pdrop),
-        ))
-        m = self.mlp
-        self.mlpf = lambda x: m.dropout(m.c_proj(m.act(m.c_fc(x)))) # MLP forward
+        self.mlp = MLP(config)
 
     def forward(self, x):
         x = x + self.attn(self.ln_1(x))
-        x = x + self.mlpf(self.ln_2(x))
+        x = x + self.mlp(self.ln_2(x))
         return x
 
 class GPT(nn.Module):
@@ -100,7 +107,7 @@ class GPT(nn.Module):
         C = CN()
         # either model_type or (n_layer, n_head, n_embd) must be given in the config
         C.model_type = 'gpt'
-        C.n_layer = None
+        C.n_layer  = None
         C.n_head = None
         C.n_embd =  None
         # these options must be filled in externally
@@ -241,6 +248,10 @@ class GPT(nn.Module):
                     # weights of blacklist modules will NOT be weight decayed
                     no_decay.add(fpn)
 
+        print("decay--------")
+        print(decay)
+        print("NODECAY--------")
+        print(no_decay)
         # validate that we considered every parameter
         param_dict = {pn: p for pn, p in self.named_parameters()}
         inter_params = decay & no_decay
@@ -257,11 +268,11 @@ class GPT(nn.Module):
         optimizer = torch.optim.AdamW(optim_groups, lr=train_config.learning_rate, betas=train_config.betas)
         return optimizer
 
-    def forward(self, idx, targets=None):
+    def forward(self, idx):
         device = idx.device
-        b, t = idx.size()
+        _, t = idx.size()
         assert t <= self.block_size, f"Cannot forward sequence of length {t}, block size is only {self.block_size}"
-        pos = torch.arange(0, t, dtype=torch.long, device=device).unsqueeze(0) # shape (1, t)
+        pos = torch.arange(0, t, dtype=torch.long, device=device,layout=None).unsqueeze(0) # shape (1, t)
 
         # forward the GPT model itself
         tok_emb = self.transformer.wte(idx) # token embeddings of shape (b, t, n_embd)
@@ -271,13 +282,7 @@ class GPT(nn.Module):
             x = block(x)
         x = self.transformer.ln_f(x)
         logits = self.lm_head(x)
-
-        # if we are given some desired targets also calculate the loss
-        loss = None
-        if targets is not None:
-            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1)
-
-        return logits, loss
+        return logits
 
     @torch.no_grad()
     def generate(self, idx, max_new_tokens, temperature=1.0, do_sample=False, top_k=None):

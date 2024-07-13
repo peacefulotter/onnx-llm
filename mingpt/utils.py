@@ -4,6 +4,7 @@ import sys
 import json
 import random
 from ast import literal_eval
+from typing import Literal, Optional
 
 import numpy as np
 import torch
@@ -33,6 +34,15 @@ class CfgNode:
     # TODO: convert to subclass from a dict like in yacs?
     # TODO: implement freezing to prevent shooting of own foot
     # TODO: additional existence/override checks when reading/writing params?
+    model_type="gpt2"
+    vocab_size : Optional[int]= 50257
+    block_size : Optional[int]= 1024
+    n_layer : Optional[int]= None
+    n_head : Optional[int]= None
+    n_embd : Optional[int]= None
+    embd_pdrop : float
+    resid_pdrop : float
+    attn_pdrop : float
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)

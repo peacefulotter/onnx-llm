@@ -1,0 +1,87 @@
+number of parameters: 124.44M
+graph(%self : __torch__.mingpt.model.GPT,
+      %idx.1 : Tensor,
+      %targets.1 : Tensor?):
+  %141 : Function = prim::Constant[name="cross_entropy"]()
+  %140 : float = prim::Constant[value=0.]()
+  %139 : str = prim::Constant[value="mean"]()
+  %122 : int = prim::Constant[value=-1]() # /home/albato/code/ml/minGPT/mingpt/model.py:285:47
+  %42 : int = prim::Constant[value=1]()
+  %23 : int = prim::Constant[value=4]() # /home/albato/code/ml/minGPT/mingpt/model.py:271:39
+  %19 : NoneType = prim::Constant()
+  %17 : str = prim::Constant[value="AssertionError: "]() # /home/albato/code/ml/minGPT/mingpt/model.py:270:8
+  %13 : str = prim::Constant[value="Cannot forward sequence of length {}, block size is only {}"]() # /home/albato/code/ml/minGPT/mingpt/model.py:270:37
+  %21 : int = prim::Constant[value=0]() # /home/albato/code/ml/minGPT/mingpt/model.py:271:27
+  %device.1 : Device = prim::device(%idx.1)
+  %6 : int[] = aten::size(%idx.1) # /home/albato/code/ml/minGPT/mingpt/model.py:269:15
+  %7 : int, %t.1 : int = prim::ListUnpack(%6)
+  %block_size.1 : int = prim::GetAttr[name="block_size"](%self)
+  %11 : bool = aten::le(%t.1, %block_size.1) # /home/albato/code/ml/minGPT/mingpt/model.py:270:15
+   = prim::If(%11) # /home/albato/code/ml/minGPT/mingpt/model.py:270:8
+    block0():
+      -> ()
+    block1():
+      %block_size : int = prim::GetAttr[name="block_size"](%self)
+      %16 : str = aten::format(%13, %t.1, %block_size) # /home/albato/code/ml/minGPT/mingpt/model.py:270:37
+      %18 : str = aten::add(%17, %16) # /home/albato/code/ml/minGPT/mingpt/model.py:270:8
+       = prim::RaiseException(%18, %19) # /home/albato/code/ml/minGPT/mingpt/model.py:270:8
+      -> ()
+  %28 : Tensor = aten::arange(%21, %t.1, %23, %19, %device.1, %19) # /home/albato/code/ml/minGPT/mingpt/model.py:271:14
+  %pos.1 : Tensor = aten::unsqueeze(%28, %21) # /home/albato/code/ml/minGPT/mingpt/model.py:271:14
+  %transformer.1 : __torch__.torch.nn.modules.container.ModuleDict = prim::GetAttr[name="transformer"](%self)
+  %wte : __torch__.torch.nn.modules.sparse.Embedding = prim::GetAttr[name="wte"](%transformer.1)
+  %tok_emb.1 : Tensor = prim::CallMethod[name="forward"](%wte, %idx.1) # /home/albato/code/ml/minGPT/mingpt/model.py:274:18
+  %transformer.3 : __torch__.torch.nn.modules.container.ModuleDict = prim::GetAttr[name="transformer"](%self)
+  %wpe : __torch__.torch.nn.modules.sparse.___torch_mangle_0.Embedding = prim::GetAttr[name="wpe"](%transformer.3)
+  %pos_emb.1 : Tensor = prim::CallMethod[name="forward"](%wpe, %pos.1) # /home/albato/code/ml/minGPT/mingpt/model.py:275:18
+  %transformer.5 : __torch__.torch.nn.modules.container.ModuleDict = prim::GetAttr[name="transformer"](%self)
+  %drop : __torch__.torch.nn.modules.dropout.Dropout = prim::GetAttr[name="drop"](%transformer.5)
+  %43 : Tensor = aten::add(%tok_emb.1, %pos_emb.1, %42) # /home/albato/code/ml/minGPT/mingpt/model.py:276:34
+  %x.1 : Tensor = prim::CallMethod[name="forward"](%drop, %43) # /home/albato/code/ml/minGPT/mingpt/model.py:276:12
+  %transformer.7 : __torch__.torch.nn.modules.container.ModuleDict = prim::GetAttr[name="transformer"](%self)
+  %h : __torch__.torch.nn.modules.container.ModuleList = prim::GetAttr[name="h"](%transformer.7)
+  %_0 : __torch__.mingpt.model.Block = prim::GetAttr[name="0"](%h)
+  %_1 : __torch__.mingpt.model.Block = prim::GetAttr[name="1"](%h)
+  %_2 : __torch__.mingpt.model.Block = prim::GetAttr[name="2"](%h)
+  %_3 : __torch__.mingpt.model.Block = prim::GetAttr[name="3"](%h)
+  %_4 : __torch__.mingpt.model.Block = prim::GetAttr[name="4"](%h)
+  %_5 : __torch__.mingpt.model.Block = prim::GetAttr[name="5"](%h)
+  %_6 : __torch__.mingpt.model.Block = prim::GetAttr[name="6"](%h)
+  %_7 : __torch__.mingpt.model.Block = prim::GetAttr[name="7"](%h)
+  %_8 : __torch__.mingpt.model.Block = prim::GetAttr[name="8"](%h)
+  %_9 : __torch__.mingpt.model.Block = prim::GetAttr[name="9"](%h)
+  %_10 : __torch__.mingpt.model.Block = prim::GetAttr[name="10"](%h)
+  %_11 : __torch__.mingpt.model.Block = prim::GetAttr[name="11"](%h)
+  %x.5 : Tensor = prim::CallMethod[name="forward"](%_0, %x.1) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.9 : Tensor = prim::CallMethod[name="forward"](%_1, %x.5) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.13 : Tensor = prim::CallMethod[name="forward"](%_2, %x.9) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.17 : Tensor = prim::CallMethod[name="forward"](%_3, %x.13) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.21 : Tensor = prim::CallMethod[name="forward"](%_4, %x.17) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.25 : Tensor = prim::CallMethod[name="forward"](%_5, %x.21) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.29 : Tensor = prim::CallMethod[name="forward"](%_6, %x.25) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.33 : Tensor = prim::CallMethod[name="forward"](%_7, %x.29) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.37 : Tensor = prim::CallMethod[name="forward"](%_8, %x.33) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.41 : Tensor = prim::CallMethod[name="forward"](%_9, %x.37) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.45 : Tensor = prim::CallMethod[name="forward"](%_10, %x.41) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %x.49 : Tensor = prim::CallMethod[name="forward"](%_11, %x.45) # /home/albato/code/ml/minGPT/mingpt/model.py:278:16
+  %transformer : __torch__.torch.nn.modules.container.ModuleDict = prim::GetAttr[name="transformer"](%self)
+  %ln_f : __torch__.torch.nn.modules.normalization.LayerNorm = prim::GetAttr[name="ln_f"](%transformer)
+  %x.53 : Tensor = prim::CallMethod[name="forward"](%ln_f, %x.49) # /home/albato/code/ml/minGPT/mingpt/model.py:279:12
+  %lm_head : __torch__.torch.nn.modules.linear.___torch_mangle_4.Linear = prim::GetAttr[name="lm_head"](%self)
+  %logits.1 : Tensor = prim::CallMethod[name="forward"](%lm_head, %x.53) # /home/albato/code/ml/minGPT/mingpt/model.py:280:17
+  %116 : bool = aten::__isnot__(%targets.1, %19) # /home/albato/code/ml/minGPT/mingpt/model.py:284:11
+  %loss : Tensor? = prim::If(%116) # /home/albato/code/ml/minGPT/mingpt/model.py:284:8
+    block0():
+      %targets.7 : Tensor = prim::unchecked_cast(%targets.1)
+      %126 : int = aten::size(%logits.1, %122) # /home/albato/code/ml/minGPT/mingpt/model.py:285:51
+      %127 : int[] = prim::ListConstruct(%122, %126)
+      %128 : Tensor = aten::view(%logits.1, %127) # /home/albato/code/ml/minGPT/mingpt/model.py:285:35
+      %132 : int[] = prim::ListConstruct(%122)
+      %133 : Tensor = aten::view(%targets.7, %132) # /home/albato/code/ml/minGPT/mingpt/model.py:285:69
+      %loss.3 : Tensor = prim::CallFunction(%141, %128, %133, %19, %19, %122, %19, %139, %140) # /home/albato/code/ml/minGPT/mingpt/model.py:285:19
+      -> (%loss.3)
+    block1():
+      -> (%19)
+  %154 : (Tensor, Tensor?) = prim::TupleConstruct(%logits.1, %loss)
+  return (%154)
+
