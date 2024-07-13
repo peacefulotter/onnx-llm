@@ -1,10 +1,10 @@
-import torch 
-import torch._dynamo.config
-from mingpt.model import GPT
-from torch.utils.data import Dataset
+import torch
 import pickle
+from torch.utils.data import Dataset
+
+
 class SortDataset(Dataset):
-    """ 
+    """
     Dataset for the Sort problem. E.g. for problem length 6:
     Input: 0 0 2 1 0 1 -> Output: 0 0 0 1 1 2
     Which will feed into the transformer concatenated as:
@@ -14,30 +14,29 @@ class SortDataset(Dataset):
     """
 
     def __init__(self, split, length=6, num_digits=3):
-        assert split in {'train', 'test'}
+        assert split in {"train", "test"}
         self.split = split
         self.length = length
         self.num_digits = num_digits
-    
+
     def __len__(self):
-        return 10000 # ...
-    
+        return 10000  # ...
+
     def get_vocab_size(self):
         return self.num_digits
-    
+
     def get_block_size(self):
-        # the length of the sequence that will feed into transformer, 
+        # the length of the sequence that will feed into transformer,
         # containing concatenated input and the output, but -1 because
         # the transformer starts making predictions at the last input element
         return self.length * 2 - 1
 
     def __getitem__(self, idx):
-        
         # use rejection sampling to generate an input example from the desired split
         while True:
             # generate some random integers
             inp = torch.randint(self.num_digits, size=(self.length,), dtype=torch.long)
-            # half of the time let's try to boost the number of examples that 
+            # half of the time let's try to boost the number of examples that
             # have a large number of repeats, as this is what the model seems to struggle
             # with later in training, and they are kind of rate
             if torch.rand(1).item() < 0.5:
@@ -46,10 +45,12 @@ class SortDataset(Dataset):
                     continue
             # figure out if this generated example is train or test based on its hash
             h = hash(pickle.dumps(inp.tolist()))
-            inp_split = 'test' if h % 4 == 0 else 'train' # designate 25% of examples as test
+            inp_split = (
+                "test" if h % 4 == 0 else "train"
+            )  # designate 25% of examples as test
             if inp_split == self.split:
-                break # ok
-        
+                break  # ok
+
         # solve the task: i.e. sort
         sol = torch.sort(inp)[0]
 
@@ -60,37 +61,5 @@ class SortDataset(Dataset):
         x = cat[:-1].clone()
         y = cat[1:].clone()
         # we only want to predict at output locations, mask out the loss at the input locations
-        y[:self.length-1] = -1
+        y[: self.length - 1] = -1
         return x, y
-
-
-model_config = GPT.get_default_config()
-model_config.model_type = 'gpt2'
-model_config.vocab_size = 50257 # openai's model vocabulary
-model_config.block_size = 1024  # openai's model block_size (i.e. input context length)
-model = GPT(model_config) 
-
-model.load_state_dict(torch.load("model.pt"))
-
-model.to("cuda")
-model.train()
-dataset = SortDataset("train")
-dummy_input_train = SortDataset("train")[:32]
-dummy_input = torch.randint(3, size=(32,11), dtype=torch.long,device="cuda:0")
-
-
-input_names = [ "input" ]
-output_names = [ "output" ]
-print("EXPORTING")
-torch._dynamo.config.dynamic_shapes = True
-
-script_model = torch.jit.script(model)
-torch.onnx.export(script_model, 
-                  dummy_input,
-                   "test.onnx.pb",
-                  input_names = input_names,
-                  output_names=output_names,
-                  export_params=True,
-                  dynamic_axes={"input":{0:"batch_size"},
-                                "output":{0:"batch_size"}},
-                  opset_version=15)
