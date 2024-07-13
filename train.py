@@ -8,6 +8,26 @@ from mingpt.trainer import Trainer
 
 from dataset import SortDataset
 
+# %%
+import torch
+
+
+class Net(torch.nn.Module):
+    def __init__(self, C):
+        super().__init__()
+        self.layer_norm = torch.nn.LayerNorm(C, eps=1e-8)
+
+    def forward(self, x):
+        return self.layer_norm(x)
+
+
+N, C = 8, 4
+model = Net(C).half()
+x = torch.randn(N, C).half()
+
+torch.onnx.export(model, x, "test_layernorm_export_fp16.onnx", opset_version=12)
+# %%
+
 
 def print_model_state_dict(model: nn.Module):
     print("Model's state_dict:")
@@ -33,11 +53,11 @@ def train_model(trainer: Trainer, model: nn.Module):
     torch.save(model.state_dict(), "model.pt")
 
 
-def get_model() -> nn.Module:
+def get_model(vocab_size=3, block_size=12) -> nn.Module:
     config = GPT.get_default_config()
-    config.model_type = "gpt2"
-    config.vocab_size = 3
-    config.block_size = 12
+    config.model_type = "gpt-nano"
+    config.vocab_size = vocab_size
+    config.block_size = block_size
     model = GPT(config)
     return model
 

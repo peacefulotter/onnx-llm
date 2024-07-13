@@ -1,9 +1,6 @@
 import torch
 import torch._dynamo.config
 
-from mingpt.model import GPT
-
-# from dataset import SortDataset
 from train import get_model
 
 torch._dynamo.config.dynamic_shapes = True
