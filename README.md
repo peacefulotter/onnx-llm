@@ -12,6 +12,8 @@ python train.py
 # 4. Convert the model to ONNX
 #    This step creates a model.onnx
 python onnx-export.py
+# 5. Run the model on ONNX
+python onnx-run.py
 ```
 
 # minGPT
