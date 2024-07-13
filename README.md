@@ -12,9 +12,7 @@ python train.py
 # 4. Convert the model to ONNX
 #    This step creates a model.onnx
 python onnx-export.py
-
-
-
+```
 
 # minGPT
 
@@ -26,10 +24,10 @@ A PyTorch re-implementation of [GPT](https://github.com/openai/gpt-2), both trai
 
 The minGPT library is three files: [mingpt/model.py](mingpt/model.py) contains the actual Transformer model definition, [mingpt/bpe.py](mingpt/bpe.py) contains a mildly refactored Byte Pair Encoder that translates between text and sequences of integers exactly like OpenAI did in GPT, [mingpt/trainer.py](mingpt/trainer.py) is (GPT-independent) PyTorch boilerplate code that trains the model. Then there are a number of demos and projects that use the library in the `projects` folder:
 
-- `projects/adder` trains a GPT from scratch to add numbers (inspired by the addition section in the GPT-3 paper)
-- `projects/chargpt` trains a GPT to be a character-level language model on some input text file
-- `demo.ipynb` shows a minimal usage of the `GPT` and `Trainer` in a notebook format on a simple sorting example
-- `generate.ipynb` shows how one can load a pretrained GPT2 and generate text given some prompt
+-   `projects/adder` trains a GPT from scratch to add numbers (inspired by the addition section in the GPT-3 paper)
+-   `projects/chargpt` trains a GPT to be a character-level language model on some input text file
+-   `demo.ipynb` shows a minimal usage of the `GPT` and `Trainer` in a notebook format on a simple sorting example
+-   `generate.ipynb` shows how one can load a pretrained GPT2 and generate text given some prompt
 
 ### Library Installation
 
@@ -41,7 +39,7 @@ git clone https://github.com/karpathy/minGPT.git
 cd minGPT
 pip install -e .
 
-````
+```
 
 ### Usage
 
@@ -54,7 +52,7 @@ model_config.model_type = 'gpt2'
 model_config.vocab_size = 50257 # openai's model vocabulary
 model_config.block_size = 1024  # openai's model block_size (i.e. input context length)
 model = GPT(model_config)
-````
+```
 
 And here's how you'd train it:
 
