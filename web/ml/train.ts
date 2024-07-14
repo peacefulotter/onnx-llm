@@ -69,7 +69,7 @@ export async function runTraining(
     maxIters: number = 1000,
     blockSize: number = 11,
     vocabSize: number = 3,
-    batchSize: number = 2
+    batchSize: number = 16
 ) {
     const session = await getTrainingSession()
     const dataset = new SortData(session, blockSize, vocabSize, batchSize)

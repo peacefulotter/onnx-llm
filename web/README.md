@@ -17,3 +17,12 @@ npm install
 # 3. Start the development server
 npm run dev
 ```
+
+## Export results to wandb
+
+At the end of training, the recorded logs are logged in the console. Copy the object and paste it into a `training.json` file. Then run the following command:   
+```sh
+# Make sure you have "wandb" installed  
+python export-wandb.py
+```
+
