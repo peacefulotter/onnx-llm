@@ -9,7 +9,7 @@ class GPT(_GPT):
 
 
 def get_model(
-    model_type: str = "gpt-nano", vocab_size: int = 3, block_size: int = 12
+    model_type: str = "gpt-nano", vocab_size: int = 3, block_size: int = 11
 ) -> GPT:
     config = GPT.get_default_config()
     config.model_type = model_type

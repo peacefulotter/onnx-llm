@@ -196,7 +196,9 @@ class GPT(nn.Module):
                 wpe=nn.Embedding(config.block_size, config.n_embd),
                 drop=nn.Dropout(config.embd_pdrop),
                 h=nn.ModuleList([Block(config) for _ in range(config.n_layer)]),
-                ln_f=nn.LayerNorm(config.n_embd) if not export_mode else nn.Identity(),
+                ln_f=nn.LayerNorm(
+                    config.n_embd
+                ),  # if not export_mode else nn.Identity(),
             )
         )
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
