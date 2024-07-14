@@ -2,12 +2,20 @@ import torch
 import numpy as np
 import onnxruntime as ort
 
+import config
+from model import get_checkpoint_path
+
+args = config.get_args()
+
 # Create a random input tensor
-test_input = torch.randint(3, size=(1, 11), dtype=torch.long)
+test_input = torch.randint(
+    args.vocab_size, size=(args.batch_size, args.block_size), dtype=torch.long
+)
 test_input = test_input.detach().cpu().numpy()
 
 # Load the ONNX model and run the inference
-ort_sess = ort.InferenceSession("model.onnx")
+cp_path = get_checkpoint_path(args, onnx=True)
+ort_sess = ort.InferenceSession(cp_path)
 outputs = ort_sess.run(None, {"input": test_input})
 
 # Get the predictions

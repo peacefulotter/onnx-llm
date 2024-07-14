@@ -1,6 +1,7 @@
 import torch
 import torch._dynamo.config
 
+import config
 from model import get_model, load_model, get_checkpoint_path
 
 torch._dynamo.config.dynamic_shapes = True
@@ -8,24 +9,17 @@ torch._dynamo.config.dynamic_shapes = True
 
 if __name__ == "__main__":
 
-    model_type = "gpt-nano"
-    vocab_size = 3
-    block_size = 11
-
-    model = get_model(
-        model_type=model_type, vocab_size=vocab_size, block_size=block_size
-    )
+    args = config.get_args()
+    model = get_model(**args)
 
     # Load checkpoint and move model to device
-    load_model(model)
+    if args.pretrained:
+        load_model(model)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = model.to(device)
-
-    bs = 8  # any batch size works
+    bs = args.batch_size
     example_input = torch.randint(
-        high=vocab_size,
-        size=(bs, block_size),
+        high=args.vocab_size,
+        size=(bs, args.block_size),
         dtype=torch.int32,
     )
 

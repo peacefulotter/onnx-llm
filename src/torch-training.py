@@ -18,8 +18,6 @@ def batch_end_callback(trainer: Trainer):
         print(
             f"iter_dt {trainer.iter_dt * 1000:.2f}ms; iter {trainer.iter_num}: train loss {trainer.loss.item():.5f}"
         )
-        save_model(trainer.model)
-        raise Exception("stop training")
 
 
 def train_model(trainer: Trainer, model: nn.Module):
@@ -31,21 +29,25 @@ def train_model(trainer: Trainer, model: nn.Module):
     print_model_state_dict(model)
 
 
-def get_trainer(model: nn.Module, dataset: Dataset):
+def get_trainer(model: nn.Module, dataset: Dataset, args):
     config = Trainer.get_default_config()
-    config.learning_rate = 5e-4
-    config.max_iters = 1000
-    config.batch_size = 32
+    config.learning_rate = args.learning_rate
+    config.max_iters = args.max_iters
+    config.batch_size = args.batch_size
     trainer = Trainer(config, model, dataset)
     return trainer
 
 
 if __name__ == "__main__":
 
-    dataset = SortDataset("train")
-    model = get_model(model_type="gpt-nano", vocab_size=3, block_size=11)
+    import config
 
-    trainer = get_trainer(model, dataset)
+    args = config.get_training_args()
+
+    dataset = SortDataset("train")
+    model = get_model(**args)
+
+    trainer = get_trainer(model, dataset, args)
     train_model(trainer, model)
 
     save_model(model)

@@ -63,3 +63,10 @@ class SortDataset(Dataset):
         # we only want to predict at output locations, mask out the loss at the input locations
         y[: self.length - 1] = -1
         return x, y
+
+
+if __name__ == "__main__":
+    dataset = SortDataset("train")
+    x, y = dataset[0]
+    print("Original", x.shape, x.dtype, y.shape, y.dtype)
+    print(x, y)
