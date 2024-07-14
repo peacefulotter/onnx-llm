@@ -50,7 +50,7 @@ export async function runInference(
     modelType: string = 'gpt-nano',
     vocabSize: number = 3,
     blockSize: number = 11,
-    batchSize: number = 2
+    batchSize: number = 16
 ) {
     const session = await getSession(modelType, vocabSize, blockSize)
     const feeds = getInferenceBatch(session, blockSize, vocabSize, batchSize)
