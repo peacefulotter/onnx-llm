@@ -13,3 +13,4 @@ venv/
 *.onnx
 checkpoint
 *.egg-info/
+wandb/
