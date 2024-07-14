@@ -13,7 +13,6 @@
     "@wandb/sdk": "^0.5.1",
     "fs": "^0.0.1-security",
     "jimp": "^0.16.1",
-    "lodash": "^4.17.21",
     "ndarray": "^1.0.19",
     "ndarray-ops": "^1.2.2",
     "next": "^11.1.2",

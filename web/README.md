@@ -6,9 +6,14 @@
 # Installation
 
 ```sh
-# 1. Install the required packages
+# 1. Make sure you have Node.js 16
+node --version
+# 1.2 If you have nvm just do:
+nvm use 16
+
+# 2. Install the required packages
 npm install
 
-# 2. Start the development server
+# 3. Start the development server
 npm run dev
 ```
