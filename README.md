@@ -1,27 +1,17 @@
-# Installation
+# ONNX-LLM
 
-```sh
-# 1. Create and activate the environment
-python -m venv venv
-source venv/bin/activate
+> Allows training and evaluation of a Large Language Model (LLM) on ONNX.
 
-# 2. Install the required packages
-pip install -r requirements.txt
 
-# (Optional) Train the model for a few iterations and save a checkpoint file
-python torch-training.py
+# Requirements
+- Python 3 (Tested on 3.10.12)
+- Pip (Tested on 22.0.2)
+- Node.js <b>v16</b> (Tested on 16.20.0), use [nvm](https://github.com/nvm-sh/nvm) to install and manage Node.js versions
 
-# ====== Inference Mode =====
-# 3.1 Convert the model to ONNX, this step creates a .onnx file
-python src/onnx-inference.py
+# Guide
 
-# 3.2. Run the model on ONNX
-python src/onnx-inference-test.py
+#### Offline setup
+Start with the offline setup under `python/`. The goal is to convert a torch model to a ONNX model and artifacts. The ONNX model can then be used for inference and training on device. See `python/README.md` for more details.
 
-# ====== Train Mode =====
-# 4.1 Conver the model to ONNX artifacts, this step creates 3 .onnx files and a "checkpoint" file
-python src/onnx-training.py
-
-# 4.2. Run training / eval step on ONNX
-python src/onnx-training-test.py
-```
+#### Web setup
+The web setup under `web/` is a NextJS app that uses `onnxruntime-web` to run the model in the browser. See `web/README.md` for more details.
