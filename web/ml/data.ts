@@ -1,6 +1,4 @@
 import * as ort from 'onnxruntime-web/training'
-/// import { TrainingSession } from 'onnxruntime-common/lib/training-session-impl'
-// import { InferenceSession } from 'onnxruntime-common/lib/inference-session-impl'
 
 const isTrainingSession = (
     session: ort.TrainingSession | ort.InferenceSession

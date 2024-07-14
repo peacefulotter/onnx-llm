@@ -65,7 +65,15 @@ export async function runTraining(
         ++iter
     }
 
-    console.log(data)
+    console.log({
+        config: {
+            max_iters,
+            blockSize,
+            vocabSize,
+            batchSize,
+        },
+        data,
+    })
 
     await session.release()
 }

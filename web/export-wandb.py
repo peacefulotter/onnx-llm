@@ -1,11 +1,15 @@
 import json
 import wandb
 
-wandb.init(project="onnx-llm")
 
 with open("training.json") as f:
-    data = json.load(f)
+    js = json.load(f)
+
+wandb.init(project="onnx-llm", config=js["config"])
+
+data = js["data"]
 
 for d in data:
     wandb.log(d)
+
 wandb.finish()

@@ -1,14 +1,14 @@
 import type { NextPage } from 'next'
-import { runTraining } from '../utils/train'
+import { runTraining } from '../ml/train'
 
 const Train: NextPage = () => {
-    const runLLMTrain = async () => {
+    const _runTraining = async () => {
         await runTraining()
     }
 
     return (
         <div>
-            <button onClick={runLLMTrain}>Train LLM</button>
+            <button onClick={_runTraining}>Train LLM</button>
         </div>
     )
 }

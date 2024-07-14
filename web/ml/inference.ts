@@ -1,39 +1,37 @@
 import * as ort from 'onnxruntime-web'
 import { SortData } from './data'
 
-export async function runLLM(
-    modelType: string = 'gpt-nano',
-    vocabSize: number = 3,
-    blockSize: number = 11,
-    batchSize: number = 2
-) {
-    // Create session and set options. See the docs here for more options:
-    //https://onnxruntime.ai/docs/api/js/interfaces/InferenceSession.SessionOptions.html#graphOptimizationLevel
-
+// Create session and set options. See the docs here for more options:
+// https://onnxruntime.ai/docs/api/js/interfaces/InferenceSession.SessionOptions.html#graphOptimizationLevel
+const getSession = async (modelType: string, vocabSize: number, blockSize: number) => {
     const path = `${modelType}_vs=${vocabSize}_bs=${blockSize}.onnx`
     const session = await ort.InferenceSession.create(`./_next/static/chunks/pages/${path}`, {
         executionProviders: ['wasm'],
         graphOptimizationLevel: 'all',
     })
     console.log('Inference session created')
+    return session
+}
 
-    // Create input data
+const getInferenceBatch = (
+    session: ort.InferenceSession,
+    blockSize: number,
+    vocabSize: number,
+    batchSize: number
+) => {
     const data = new SortData(session, blockSize, vocabSize, batchSize)
     const tensor = data.getInferenceData()
     const feeds: Record<string, ort.Tensor> = {}
     feeds[session.inputNames[0]] = tensor
+    return feeds
+}
 
-    // Run the session inference.
-    const start = new Date()
-    const outputData = await session.run(feeds)
-    const end = new Date()
-    const inferenceTime = (end.getTime() - start.getTime()) / 1000
-
-    // Get output results with the output name from the model export.
-    const output = outputData[session.outputNames[0]]
-    const outputSoftmax = softmax(Array.prototype.slice.call(output.data))
-
-    // Format output to match (batchSize, blockSize) shape
+const formatOutput = (
+    outputSoftmax: number[],
+    vocabSize: number,
+    blockSize: number,
+    batchSize: number
+) => {
     const res = []
     for (let i = 0; i < batchSize; i++) {
         let sample = []
@@ -46,14 +44,35 @@ export async function runLLM(
         }
         res.push(sample)
     }
+}
+
+export async function runInference(
+    modelType: string = 'gpt-nano',
+    vocabSize: number = 3,
+    blockSize: number = 11,
+    batchSize: number = 2
+) {
+    const session = await getSession(modelType, vocabSize, blockSize)
+    const feeds = getInferenceBatch(session, blockSize, vocabSize, batchSize)
+
+    // Run the session inference.
+    const start = new Date()
+    const outputData = await session.run(feeds)
+    const end = new Date()
+    const inferenceTime = (end.getTime() - start.getTime()) / 1000
 
     await session.release()
+
+    // Get output results with the output name from the model export.
+    const output = outputData[session.outputNames[0]]
+    const outputSoftmax = softmax(Array.prototype.slice.call(output.data))
+    const outputFomatted = formatOutput(outputSoftmax, vocabSize, blockSize, batchSize)
 
     const jsxInput = ['todo']
 
     return {
         input: jsxInput,
-        res,
+        res: outputFomatted,
         inferenceTime,
     }
 }
