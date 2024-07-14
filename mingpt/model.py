@@ -9,6 +9,7 @@ https://github.com/huggingface/transformers/blob/main/src/transformers/models/gp
 """
 
 import math
+import random
 from typing import Optional
 
 import torch
@@ -356,7 +357,12 @@ class GPT(nn.Module):
             x = block(x)
         x = self.transformer.ln_f(x)
         logits = self.lm_head(x)
-        return logits
+
+        # loss = F.cross_entropy(
+        #     logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1
+        # )
+        print(logits.shape)
+        return logits.view(-1, logits.size(-1))
 
     @torch.no_grad()
     def generate(

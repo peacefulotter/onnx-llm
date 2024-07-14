@@ -1,12 +1,46 @@
 import io
 import onnx
 import torch
+import numpy as np
 import torch._dynamo.config
+import onnx.onnx_operators_pb
 from onnxruntime.training import artifacts
 
 from model import get_model, load_model, get_checkpoint_path
 
 torch._dynamo.config.dynamic_shapes = True
+
+import onnxruntime.training.onnxblock as onnxblock
+from onnxruntime.training import artifacts
+
+
+# Define a custom loss block that takes in two inputs
+# and performs a weighted average of the losses from these
+# two inputs.
+class Softmax(onnxblock.Block):
+    def __init__(self):
+        onnxblock.loss.L1Loss
+        self._exp = onnxblock.blocks.Pow(exponent=np.e)
+        self._sum = onnxblock.blocks.ReduceSum(keepdims=1)
+
+    def build(self, input):
+        return self._exp(input) / self._sum(self._exp(input), axis=1)
+
+
+class CrossEntropyLoss(onnxblock.Block):
+    def __init__(self):
+        self._softmax = Softmax()
+        self._log = onnxblock.blocks.Log()
+        self._neg = onnxblock.blocks.Neg()
+        self._gather = onnxblock.blocks.ReduceSum()
+
+    def build(self, loss_input_name1, loss_input_name2):
+        # print(loss_input_name1, loss_input_name2)
+        # print(loss_input_name1)
+        # input1 = self._softmax(loss_input_name1)
+        # input2 = self._gather("labels")
+        return loss_input_name2  # self._neg(self._log(input1)) * input2
+
 
 if __name__ == "__main__":
 
@@ -35,6 +69,7 @@ if __name__ == "__main__":
 
     f = io.BytesIO()
     input_names = ["input"]
+    # output_names = ["output", "loss"]
     output_names = ["output"]
     dynamic_axes = {"input": {0: "batch_size"}, "output": {0: "batch_size"}}
 
@@ -65,7 +100,8 @@ if __name__ == "__main__":
     artifacts.generate_artifacts(
         onnx_model,
         optimizer=artifacts.OptimType.AdamW,
-        loss=artifacts.LossType.CrossEntropyLoss,
+        loss=artifacts.LossType.CrossEntropyLoss,  # (),  #
+        # loss=CrossEntropyLoss(),
         requires_grad=requires_grad,
         frozen_params=frozen_params,
         additional_output_names=output_names,

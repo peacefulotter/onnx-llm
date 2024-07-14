@@ -35,7 +35,7 @@ class SortDataset(Dataset):
         # use rejection sampling to generate an input example from the desired split
         while True:
             # generate some random integers
-            inp = torch.randint(self.num_digits, size=(self.length,), dtype=torch.int32)
+            inp = torch.randint(self.num_digits, size=(self.length,), dtype=torch.long)
             # half of the time let's try to boost the number of examples that
             # have a large number of repeats, as this is what the model seems to struggle
             # with later in training, and they are kind of rate
