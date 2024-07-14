@@ -8,13 +8,12 @@ class GPT(_GPT):
         self.config = config
 
 
-def get_model(
-    model_type: str = "gpt-nano", vocab_size: int = 3, block_size: int = 11
-) -> GPT:
+def get_model(args) -> GPT:
     config = GPT.get_default_config()
-    config.model_type = model_type
-    config.vocab_size = vocab_size
-    config.block_size = block_size
+    config.model_type = args.model_type
+    config.vocab_size = args.vocab_size
+    config.block_size = args.block_size
+    config.args = args
     model = GPT(config)
     return model
 

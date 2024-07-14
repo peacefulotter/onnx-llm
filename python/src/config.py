@@ -26,7 +26,7 @@ def default_parser():
             "gpt-nano",
         ],
     )
-    parser.add_argument("--batch_size", default=4, type=int)
+    parser.add_argument("--batch_size", default=16, type=int)
     parser.add_argument("--block_size", default=11, type=int)
     parser.add_argument("--vocab_size", default=3, type=int)
     parser.add_argument("--pretrained", default=False, type=bool)
@@ -44,6 +44,7 @@ def get_training_args():
     parser = default_parser()
     parser.add_argument("--max_iters", default=1000, type=int)
     parser.add_argument("--learning_rate", default=1e-4, type=float)
+    parser.add_argument("--use_wandb", default=True, type=bool)
     args = parser.parse_args()
     return args
 

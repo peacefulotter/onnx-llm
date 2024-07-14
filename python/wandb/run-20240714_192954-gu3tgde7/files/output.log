@@ -1,0 +1,20 @@
+decay--------
+{'transformer.h.0.mlp.c_fc.weight', 'transformer.h.1.mlp.c_fc.weight', 'transformer.h.2.mlp.c_proj.weight', 'transformer.h.1.attn.c_attn.weight', 'transformer.h.1.mlp.c_proj.weight', 'transformer.h.2.attn.c_proj.weight', 'lm_head.weight', 'transformer.h.1.attn.c_proj.weight', 'transformer.h.0.attn.c_proj.weight', 'transformer.h.2.mlp.c_fc.weight', 'transformer.h.0.mlp.c_proj.weight', 'transformer.h.0.attn.c_attn.weight', 'transformer.h.2.attn.c_attn.weight'}
+NODECAY--------
+{'transformer.h.0.mlp.c_fc.bias', 'transformer.h.1.ln_2.weight', 'transformer.h.1.attn.c_proj.bias', 'transformer.h.0.mlp.c_proj.bias', 'transformer.h.2.ln_1.weight', 'transformer.ln_f.weight', 'transformer.h.2.ln_1.bias', 'transformer.ln_f.bias', 'transformer.h.0.ln_2.bias', 'transformer.h.0.attn.c_proj.bias', 'transformer.h.1.ln_1.bias', 'transformer.h.2.mlp.c_fc.bias', 'transformer.h.0.ln_1.bias', 'transformer.h.1.mlp.c_fc.bias', 'transformer.h.0.attn.c_attn.bias', 'transformer.h.1.attn.c_attn.bias', 'transformer.h.0.ln_1.weight', 'transformer.h.2.mlp.c_proj.bias', 'transformer.h.0.ln_2.weight', 'transformer.h.1.mlp.c_proj.bias', 'transformer.h.1.ln_2.bias', 'transformer.h.2.ln_2.weight', 'transformer.wte.weight', 'transformer.h.2.attn.c_proj.bias', 'transformer.h.2.ln_2.bias', 'transformer.wpe.weight', 'transformer.h.1.ln_1.weight', 'transformer.h.2.attn.c_attn.bias'}
+torch.Size([16, 11, 3])
+Traceback (most recent call last):
+  File "/home/edge/dev/py/minGPTtoONNX/python/src/torch-training.py", line 77, in <module>
+    train_model(trainer, model, args)
+  File "/home/edge/dev/py/minGPTtoONNX/python/src/torch-training.py", line 50, in train_model
+    trainer.run()
+  File "/home/edge/dev/py/minGPTtoONNX/python/src/mingpt/trainer.py", line 117, in run
+    self.trigger_callbacks("on_batch_end", logits=logits, targets=y)
+  File "/home/edge/dev/py/minGPTtoONNX/python/src/mingpt/trainer.py", line 61, in trigger_callbacks
+    callback(self, **kwargs)
+  File "/home/edge/dev/py/minGPTtoONNX/python/src/torch-training.py", line 20, in batch_end_callback
+    if trainer.model.args.use_wandb:
+       ^^^^^^^^^^^^^^^^^^
+  File "/home/edge/anaconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1709, in __getattr__
+    raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+AttributeError: 'GPT' object has no attribute 'args'

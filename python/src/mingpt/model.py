@@ -361,7 +361,6 @@ class GPT(nn.Module):
         # loss = F.cross_entropy(
         #     logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1
         # )
-        print(logits.shape)
         return logits.view(-1, logits.size(-1))
 
     @torch.no_grad()

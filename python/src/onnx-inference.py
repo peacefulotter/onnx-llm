@@ -10,7 +10,7 @@ torch._dynamo.config.dynamic_shapes = True
 if __name__ == "__main__":
 
     args = config.get_args()
-    model = get_model(**args)
+    model = get_model(args)
 
     # Load checkpoint and move model to device
     if args.pretrained:
